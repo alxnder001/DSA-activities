@@ -1,157 +1,174 @@
 #include <iostream>
-#include <string>
 using namespace std;
 
-struct Node {
-    string song;
-    string artist;
-    Node* next;
-};
+typedef struct Node {
+	string songName;
+	Node *link;
+} Node;
 
-Node* createNode(const string &song, const string &artist) {
-    Node* newNode = new Node;
-    newNode->song = song;
-    newNode->artist = artist;
-    newNode->next = NULL;
-    return newNode;
+Node* createNode(string data) {
+	Node* newNode = new Node;
+	newNode->songName = data;
+	newNode->link = NULL;
+	return newNode;
 }
 
-void traverse(Node* head) {
-    Node* current = head;
-    while (current != NULL) {
-        cout << current->song << " by " << current->artist << " -> ";
-        current = current->next;
-    }
-    cout << "NULL" << endl;
+void traverse (Node *head) {
+	Node *temp = new Node;
+	temp = head;
+
+	cout << "My Playlist" <<endl;
+	while(temp !=NULL) {
+		cout << temp->songName<< "->" <<endl;
+		if(temp->link == NULL) {
+			cout << "NULL" << endl;
+		}
+		temp = temp->link;
+	}
 }
 
-void traverseCircular(Node* head) {
-    if (head == NULL) return;
-    Node* current = head;
-    do {
-        cout << current->song << " by " << current->artist << " -> ";
-        current = current->next;
-    } while (current != head);
-    cout << "(back to head)" << endl;
+Node *insertAtEnd(string data, Node *head) {
+	if(head == NULL) {
+		Node *newNode = createNode(data);
+		head = newNode;
+		cout << "A new node has been insterted at the end \n" << endl;
+		return head;
+	}
+	Node *temp = new Node;
+	temp = head;
+
+	while (temp->link != NULL) {
+		temp = temp->link;
+	}
+	Node *newNode = createNode(data);
+	temp->link = newNode;
+
+	cout << "A new node has been insterted at the end \n" << endl;
+	return head;
 }
 
-void insertAtEnd(Node* &head, const string &song, const string &artist) {
-    Node* newNode = createNode(song, artist);
-    if (head == NULL) {
-        head = newNode;
-        return;
-    }
-    Node* temp = head;
-    while (temp->next != NULL)
-        temp = temp->next;
-    temp->next = newNode;
+Node *instertAtBeginning(string data, Node *head) {
+	Node *newNode = createNode(data);
+	newNode->link = head;
+
+	head = newNode;
+
+	cout << "A new node has been inserted at the beginning \n" <<endl;
+	return head;
+}
+string insertAfter(string after, string data, Node *head) {
+	Node *temp = new Node;
+	temp = head;
+
+	while(temp->songName.compare(after) !=0) {
+		if(temp == NULL) {
+			return "No such song exist, please try again.";
+		}
+
+		temp = temp->link;
+	}
+	Node *newNode = createNode(data);
+	newNode->link = temp->link;
+	temp->link = newNode;
+
+	return "An new node has been added after" + after + "\n";
 }
 
-void insertAtBeginning(Node* &head, const string &song, const string &artist) {
-    Node* newNode = createNode(song, artist);
-    newNode->next = head;
-    head = newNode;
+string deleteAtEnd(Node *head) {
+	if(head == NULL) {
+		return "The linked list is empty \n";
+	}
+
+	if(head->link == NULL) {
+		delete head;
+		return "The head has been deleted \n";
+	}
+
+	Node *temp = new Node;
+	temp = head;
+
+	while(temp->link->link != NULL) {
+		temp = temp->link;
+	}
+
+	temp->link = NULL;
+
+	return "A node has been deleted at the end \n";
 }
 
-void insertAfter(Node* prevNode, const string &song, const string &artist) {
-    if (prevNode == NULL) {
-        cout << "Previous node cannot be NULL." << endl;
-        return;
-    }
-    Node* newNode = createNode(song, artist);
-    newNode->next = prevNode->next;
-    prevNode->next = newNode;
+Node *deleteFromBeginning(Node *head) {
+	if(head == NULL) {
+		cout << "The linked list is empty \n" << endl;
+		return NULL;
+	}
+
+	if(head->link == NULL) {
+		delete head;
+	}
+	head = head->link;
+
+	cout << "A node has been delete from the beginning \n" << endl;
+
+	return head;
 }
 
-Node* findNode(Node* head, const string &song) {
-    Node* current = head;
-    while (current != NULL) {
-        if (current->song == song)
-            return current;
-        current = current->next;
-    }
-    return NULL;
+Node *deleteFromGivenNode(string givenNode, Node *head) {
+	if(head == NULL) {
+		cout << "The Node" + givenNode + " has been deleted. \n" << endl;
+		return head;
+	}
+	Node *temp = new Node;
+	Node *next = new Node;
+	temp = head;
+	next = temp->link;
+
+	while(next->songName.compare(givenNode) !=0) {
+		if(temp == NULL) {
+			cout << "No Such node exist. \n" << endl;
+			return head;
+		}
+		next = next->link;
+		temp = temp->link;
+	}
+	temp->link = next->link;
+	cout << "The Node " + givenNode + " has been deleted. \n" << endl;
+	return head;
 }
 
-void deleteFromEnd(Node* &head) {
-    if (head == NULL) return;
-    if (head->next == NULL) {
-        delete head;
-        head = NULL;
-        return;
-    }
-    Node* temp = head;
-    while (temp->next->next != NULL)
-        temp = temp->next;
-    delete temp->next;
-    temp->next = NULL;
-}
+int main(){
 
-void deleteFromBeginning(Node* &head) {
-    if (head == NULL) return;
-    Node* temp = head;
-    head = head->next;
-    delete temp;
-}
+	Node *head = createNode ("30 for 30 by Kendrick Lamar and SZA");
+	traverse(head);
+	head = insertAtEnd("All the Stars by Kendrick Lamar and SZA", head);
+	traverse(head);
+	head = insertAtEnd("Luther by Kendrick Lamar and SZA", head);
+	traverse(head);
+	head = insertAtEnd("Sunflower by Post Malone", head);
+	traverse(head);
 
-void deleteGivenNode(Node* &head, const string &song) {
-    if (head == NULL) return;
-    if (head->song == song) {
-        deleteFromBeginning(head);
-        return;
-    }
-    Node* temp = head;
-    while (temp->next != NULL && temp->next->song != song)
-        temp = temp->next;
-    if (temp->next == NULL) {
-        cout << "Song not found: " << song << endl;
-        return;
-    }
-    Node* toDelete = temp->next;
-    temp->next = toDelete->next;
-    delete toDelete;
-}
+	head = instertAtBeginning ("Circles by Post Malone", head);
+	traverse(head);
+	head = instertAtBeginning ("Is There Someone Else? by The Weeknd", head);
+	traverse(head);
+	head = instertAtBeginning ("Blinding Lights by The Weeknd", head);
+	traverse(head);
+	head = instertAtBeginning ("13 by Lany", head);
+	traverse(head);
 
-void convertToCircular(Node* head) {
-    if (head == NULL) return;
-    Node* temp = head;
-    while (temp->next != NULL)
-        temp = temp->next;
-    temp->next = head;
-}
+	insertAfter ("7 11 by Toneejay","Circles by Post Malone", head);
+	traverse(head);
+	insertAfter ("Kay Tagal Kitang Hinintay by Sponge Cola","Is There Someone Else? by The Weeknd", head);
+	traverse(head);
+	insertAfter ("Tropa by Siakol","Blinding Lights by The Weeknd", head);
+	traverse(head);
 
-int main() {
-    Node* head = NULL;
-    insertAtEnd(head, "Circles", "Post Malone");
-    insertAtEnd(head, "Is There Someone Else?", "The Weeknd");
-    insertAtEnd(head, "Blinding Lights", "The Weeknd");
-    insertAtBeginning(head, "Sunflower", "Post Malone");
-    insertAtBeginning(head, "Luther", "Kendrick Lamar and SZA");
-    insertAtBeginning(head, "All the Stars", "Kendrick Lamar and SZA");
-    insertAtBeginning(head, "30 for 30", "Kendrick Lamar and SZA");
-    
-    Node* favTail = findNode(head, "Sunflower");
-    if (favTail != NULL) {
-        insertAfter(favTail, "7 11", "Toneejay");
-        insertAfter(favTail->next, "Kay Tagal Kitang Hinintay", "Sponge Cola");
-        insertAfter(favTail->next->next, "Tropa", "Siakol");
-    } else {
-        cout << "Favorite song node not found." << endl;
-    }
-    
-    cout << "Linked List after insertions:" << endl;
-    traverse(head);
-    
-    deleteFromEnd(head);
-    deleteFromBeginning(head);
-    deleteGivenNode(head, "Blinding Lights");
-    
-    cout << "\nLinked List after deletions:" << endl;
-    traverse(head);
-    
-    convertToCircular(head);
-    cout << "\nCircular Linked List:" << endl;
-    traverseCircular(head);
-    
-    return 0;
+	cout << deleteAtEnd(head);
+	traverse(head);
+	head = deleteFromBeginning(head);
+	traverse(head);
+	head = deleteFromGivenNode("Circles by Post Malone",head);
+	traverse(head);
+
+	return 0;
+
 }
